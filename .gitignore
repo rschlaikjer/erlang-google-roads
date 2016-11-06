@@ -1,0 +1,9 @@
+*.beam
+*.app
+.rebar
+deps
+.eunit
+_build/
+log/
+rebar.lock
+*.dump

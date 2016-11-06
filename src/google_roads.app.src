@@ -1,0 +1,16 @@
+{application, google_roads,
+    [
+    {description, "Google roads API"},
+    {vsn, "1"},
+    {registered, []},
+    {applications, [
+        kernel,
+        stdlib,
+        sasl,
+        jsx,
+        lager,
+        gun
+    ]},
+    {mod, { google_roads_app, []}},
+    {env, []}
+    ]}.
