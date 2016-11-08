@@ -153,15 +153,20 @@ handle_snap_points(From, State=#state{}, Points, Interpolate) ->
     State#state{open_requests=NewMap}.
 
 parse_snapped_points(Data) ->
-    Response = jsx:decode(Data),
-    case proplists:get_value(<<"snappedPoints">>, Response) of
-        undefined ->
-            extract_api_error(Response);
-        SnappedPoints ->
-            {ok, lists:map(
-                fun proplist_to_snapped_point/1,
-                SnappedPoints
-            )}
+    try jsx:decode(Data) of
+        Response ->
+            case proplists:get_value(<<"snappedPoints">>, Response) of
+                undefined ->
+                    extract_api_error(Response);
+                SnappedPoints ->
+                    {ok, lists:map(
+                        fun proplist_to_snapped_point/1,
+                        SnappedPoints
+                    )}
+            end
+    catch
+        error:badarg ->
+            {error, bad_json_response}
     end.
 
 proplist_to_snapped_point(Proplist) ->
