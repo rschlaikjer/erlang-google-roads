@@ -99,10 +99,11 @@ handle_gun_response(State, ConnPid, StreamRef, nofin, Status, Headers) ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
             State;
         {ok, Request} ->
+            Blank = <<"">>,
             State#state{
                 open_requests=maps:put(
                     StreamRef,
-                    Request#request{response_data=""},
+                    Request#request{response_data=Blank},
                     State#state.open_requests
                 )
             }
@@ -114,7 +115,8 @@ handle_gun_data(State, ConnPid, StreamRef, fin, Data) ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
             State;
         {ok, Request} ->
-            FinalData = Request#request.response_data ++ Data,
+            CurData = Request#request.response_data,
+            FinalData = <<CurData/binary, Data/binary>>,
             Callback = Request#request.callback,
             Response = Callback(FinalData),
             gen_server:reply(Request#request.from, {ok, Response}),
@@ -128,7 +130,8 @@ handle_gun_data(State, ConnPid, StreamRef, nofin, Data) ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
             error;
         {ok, Request} ->
-            NewData = Request#request.response_data ++ Data,
+            CurData = Request#request.response_data,
+            NewData = <<CurData/binary, Data/binary>>,
             State#state{
                 open_requests=maps:put(
                     StreamRef,
