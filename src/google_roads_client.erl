@@ -119,7 +119,7 @@ handle_gun_data(State, ConnPid, StreamRef, fin, Data) ->
             FinalData = <<CurData/binary, Data/binary>>,
             Callback = Request#request.callback,
             Response = Callback(FinalData),
-            gen_server:reply(Request#request.from, {ok, Response}),
+            gen_server:reply(Request#request.from, Response),
             State#state{
               open_requests=maps:remove(StreamRef, State#state.open_requests)
             }
@@ -158,10 +158,10 @@ parse_snapped_points(Data) ->
         undefined ->
             extract_api_error(Response);
         SnappedPoints ->
-            lists:map(
+            {ok, lists:map(
                 fun proplist_to_snapped_point/1,
                 SnappedPoints
-            )
+            )}
     end.
 
 proplist_to_snapped_point(Proplist) ->
