@@ -61,6 +61,10 @@ handle_info({gun_response, ConnPid, StreamRef, Fin, Status, Headers}, State) ->
 handle_info({gun_data, ConnPid, StreamRef, Fin, Data}, State) ->
     NewState = handle_gun_data(State, ConnPid, StreamRef, Fin, Data),
     {noreply, NewState};
+handle_info({gun_up, _, _}, State) ->
+    {noreply, State};
+handle_info({gun_down, _, _, _, _, _}, State) ->
+    {noreply, State};
 handle_info(Info, State) ->
     lager:info("Info ~p", [Info]),
     {noreply, State}.
