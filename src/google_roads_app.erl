@@ -12,5 +12,5 @@
 start(_StartType, _StartArgs) ->
     google_roads_sup:start_link().
 
-stop(State) ->
+stop(_State) ->
     ok.

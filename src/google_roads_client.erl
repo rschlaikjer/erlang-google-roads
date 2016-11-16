@@ -85,7 +85,7 @@ snap_points(Client, Points, Interpolate) ->
 init_gun() ->
     gun:open(?GOOGLE_ROADS_DOMAIN, 443, #{protocols => [http]}).
 
-handle_gun_response(State, ConnPid, StreamRef, fin, Status, Headers) ->
+handle_gun_response(State, _ConnPid, StreamRef, fin, _Status, _Headers) ->
     case maps:find(StreamRef, State#state.open_requests) of
         error ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
@@ -97,7 +97,7 @@ handle_gun_response(State, ConnPid, StreamRef, fin, Status, Headers) ->
               open_requests=maps:remove(StreamRef, State#state.open_requests)
             }
     end;
-handle_gun_response(State, ConnPid, StreamRef, nofin, Status, Headers) ->
+handle_gun_response(State, _ConnPid, StreamRef, nofin, _Status, _Headers) ->
     case maps:find(StreamRef, State#state.open_requests) of
         error ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
@@ -113,7 +113,7 @@ handle_gun_response(State, ConnPid, StreamRef, nofin, Status, Headers) ->
             }
     end.
 
-handle_gun_data(State, ConnPid, StreamRef, fin, Data) ->
+handle_gun_data(State, _ConnPid, StreamRef, fin, Data) ->
     case maps:find(StreamRef, State#state.open_requests) of
         error ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
@@ -128,7 +128,7 @@ handle_gun_data(State, ConnPid, StreamRef, fin, Data) ->
               open_requests=maps:remove(StreamRef, State#state.open_requests)
             }
     end;
-handle_gun_data(State, ConnPid, StreamRef, nofin, Data) ->
+handle_gun_data(State, _ConnPid, StreamRef, nofin, Data) ->
     case maps:find(StreamRef, State#state.open_requests) of
         error ->
             lager:error("Got Gun callback for unknown stream ref ~p~n", [StreamRef]),
